@@ -1,12 +1,16 @@
-﻿using System;
-
-namespace WordChallenge
+﻿namespace WordChallenge
 {
-    class Program
+    using Microsoft.Extensions.DependencyInjection;
+    using WordChallenge.IoC;
+
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var services = ServiceModule.ConfigureServices();
+            var serviceProvider = services.BuildServiceProvider();
+
+            serviceProvider.GetService<EntryPoint>().Execute(args);
         }
     }
 }
