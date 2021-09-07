@@ -10,11 +10,60 @@
 
     public class ChallengeSolver : IChallengeSolver
     {
-        private IWordDictionaryCache wordCache;
+        private readonly IWordDictionaryCache wordCache;
+        private readonly IErrorHandlerService errorHandlerService;
+        private readonly IDataReaderService dataReaderService;
 
-        public IReadOnlyList<string> Solve(string startWord, string targetWord, IWordDictionaryCache wordCache)
+        public bool IsInitialised { get; private set; }
+
+        public ChallengeSolver(IWordDictionaryCache wordCache, IErrorHandlerService errorHandlerService, IDataReaderService dataReaderService)
         {
             this.wordCache = wordCache;
+            this.errorHandlerService = errorHandlerService;
+            this.dataReaderService = dataReaderService;
+        }
+
+        public bool Initialise(string dictPath, string outFilePath)
+        {
+            if (!this.dataReaderService.CheckReaderSourceExists(dictPath))
+            {
+                this.errorHandlerService.HandleError("Error: Dictionary file not found");
+                return false;
+            }
+
+            string inputBlob;
+            try
+            {
+                inputBlob = this.dataReaderService.ReadAll(dictPath);
+            }
+            catch (Exception ex)
+            {
+                this.errorHandlerService.HandleException(ex, "Error: Unable to read Dictionary data");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(inputBlob))
+            {
+                this.errorHandlerService.HandleError("Error: Unable to read Dictionary data");
+                return false;
+            }
+
+            if (!this.wordCache.LoadFilteredDictionary(inputBlob))
+            {
+                this.errorHandlerService.HandleError("Error: Unable to load Dictionary data");
+                return false;
+            }
+
+            return this.wordCache.IsDataLoadComplete;
+        }
+
+        public IReadOnlyList<string> Solve(string startWord, string targetWord)
+        {
+            if (!this.wordCache.IsDataLoadComplete)
+            {
+                this.errorHandlerService.HandleError("Error: Dictionary not loaded");
+                return null;
+            }
 
             var initialWordPair = new WordPair(startWord, targetWord);
 
@@ -22,7 +71,7 @@
 
             if (finalWordPair == null)
             {
-                // Handle Unsolvable
+                this.errorHandlerService.HandleError("No solution exists for the given words");
                 return null;
             }
 
@@ -48,11 +97,10 @@
                     if (tryPair.AreAdjacentOrSame)
                     {
                         tryPair.SetParent(input);
-
                         return tryPair;
                     }
 
-                    if (tryPair.UnmatchedCharacterCount < input.UnmatchedCharacterCount)
+                    if (tryPair.UnmatchedCharacterCount <= input.UnmatchedCharacterCount)
                     {
                         tryPairs.Add(tryPair);
                     }
@@ -64,8 +112,7 @@
                 var tryInnerPair = this.PopulateWordPairs(tryPair);
                 if (tryInnerPair != null) 
                 {
-                    tryPair.SetParent(input);
-                    tryInnerPair.SetParent(tryPair);
+                    tryInnerPair.SetParent(input);
 
                     return tryInnerPair;
                 }

@@ -7,7 +7,8 @@
 
     public interface IWordDictionaryCache
     {
-        bool LoadFilteredDictionary(IDataReaderService dataReaderService, int wordLength = -1);
+        bool IsDataLoadComplete { get; }
+        bool LoadFilteredDictionary(string inputBlob, int wordLength = -1);
         IList<string> GetPotentialWordChanges(string fromWord, IList<int> excludeCharacters = null, IList<string> excludeWords = null, int sortChar = -1);
     }
 }

@@ -7,6 +7,7 @@
 
     public interface IChallengeSolver
     {
-        IReadOnlyList<string> Solve(string startWord, string targetWord, IWordDictionaryCache wordCache);
+        bool Initialise(string dictPath, string outFilePath);
+        IReadOnlyList<string> Solve(string startWord, string targetWord);
     }
 }

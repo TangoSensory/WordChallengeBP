@@ -22,34 +22,38 @@
             }
         }
 
-        public void SetPreviousWords(IList<string> previousStartWords, IList<string> previousTargetWords)
-        {
-            this.PreviousStartWords = previousStartWords;
-            this.PreviousTargetWords = previousTargetWords;
-        }
-
-        public void SetParent(WordPair parent)
-        {
-            this.ParentWordPair = parent;
-        }
-
         public bool IsTopLevel => this.PreviousStartWords?.Any() != true;
-        public string StartWord { get; }
-        public string TargetWord { get; }
-        public IList<string> PreviousStartWords { get; private set;  }
-        public IList<string> PreviousTargetWords { get; private set; }
-
-        public IList<string> InnerStartWordOptions { get; set; }
-        public IList<string> InnerTargetWordOptions { get; set; }
-
         public int UnmatchedCharacterCount => this.wordMatchResult?.UnmatchedCharacterCount ?? -1;
-
         public bool AreAdjacentOrSame => UnmatchedCharacterCount >= 0 && this.UnmatchedCharacterCount <= 1;
         public bool AreDifferentWords => UnmatchedCharacterCount > 0;
+
+        public string StartWord { get; }
+        public string TargetWord { get; }
+        public IList<string> PreviousStartWords { get; private set; } = new List<string>();
+        public IList<string> PreviousTargetWords { get; private set; } = new List<string>();
 
         public IList<int> MatchedCharacterLocations => this.wordMatchResult?.MatchedCharacterLocations;
 
         public WordPair ParentWordPair { get; private set; }
+
+        public void SetPreviousWords(WordPair parent)
+        {
+            this.PreviousStartWords = parent.PreviousStartWords.Append(parent.StartWord).ToList();
+            this.PreviousTargetWords = parent.PreviousTargetWords.Append(parent.TargetWord).ToList();
+        }
+
+        public void SetParent(WordPair parent)
+        {
+            this.SetPreviousWords(parent);
+            if (this.ParentWordPair != null)
+            {
+                this.ParentWordPair.SetParent(parent);
+            }
+            else
+            {
+                this.ParentWordPair = parent;
+            }
+        }
 
         public IEnumerable<string> ReturnStartWordChangeHistory()
         {
@@ -77,12 +81,17 @@
                 return output;
             }
 
-            return output.Concat(this.ParentWordPair.ReturnStartWordChangeHistory());
+            return output.Concat(this.ParentWordPair.ReturnTargetWordChangeHistory());
         }
 
         public IEnumerable<string> ReturnWordChangeHistory()
         {
             return this.ReturnStartWordChangeHistory().Concat(this.ReturnTargetWordChangeHistory());
+        }
+
+        public override string ToString()
+        {
+            return string.Join(",", this.ReturnWordChangeHistory());
         }
     }
 }

@@ -8,12 +8,14 @@
 
     public class WordDictionaryCache : IWordDictionaryCache
     {
+        public bool IsDataLoadComplete => throw new NotImplementedException();
+
         public IList<string> GetPotentialWordChanges(string fromWord, IList<int> excludeCharacters = null, IList<string> excludeWords = null, int sortChar = -1)
         {
             throw new NotImplementedException();
         }
 
-        public bool LoadFilteredDictionary(IDataReaderService dataReaderService, int wordLength = -1)
+        public bool LoadFilteredDictionary(string inputBlob, int wordLength = -1)
         {
             throw new NotImplementedException();
         }
