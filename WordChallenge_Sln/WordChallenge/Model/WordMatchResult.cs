@@ -27,6 +27,6 @@
             }
         }
 
-        public IReadOnlyList<int> MatchedCharacterLocations { get; private set; }
+        public IList<int> MatchedCharacterLocations { get; private set; }
     }
 }

@@ -8,6 +8,6 @@
     public interface IWordDictionaryCache
     {
         bool LoadFilteredDictionary(IDataReaderService dataReaderService, int wordLength = -1);
-        IEnumerable<string> GetPotentialWordChanges(string fromWord, int sortChar = -1, IList<int> excludeCharacters = null, IList<string> excludeWords = null);
+        IList<string> GetPotentialWordChanges(string fromWord, IList<int> excludeCharacters = null, IList<string> excludeWords = null, int sortChar = -1);
     }
 }
