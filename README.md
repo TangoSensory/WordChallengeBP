@@ -1,4 +1,4 @@
-### WordChallengeBP
+# WordChallengeBP
 
 ## Gary Taylor
 
@@ -15,8 +15,8 @@ For example:
 # Launch / Usage Notes
 -	Build the Solution in VisualStudio
 -	Open Windows Command: Cmd.exe
-- 	Navigate to the folder containing WordChallengeBP.exe
--	Type the command using the format: WordChallengeBP "startWord" "targetWord" "dictionaryFilePath" "outputFilePath"
+- 	Navigate to the folder containing WordChallenge.exe
+-	Type the command using the format: WordChallenge "startWord" "targetWord" "dictionaryFilePath" "outputFilePath"
 -	The solution to the puzzle, written to the supplied "outputFilePath", will be a text file containing a comma-separated list of words
 -	Errors will be notified to the console window, in which case the "outputFilePath" file will be empty
 -	For serurity reasons, if "outputFilePath" exists when execution begins, it will not be overwritten
