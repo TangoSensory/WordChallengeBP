@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using WordChallenge.Cache.Interfaces;
     using WordChallenge.Model;
     using WordChallenge.Services.Interfaces;
@@ -12,74 +11,62 @@
     {
         private readonly IWordDictionaryCache wordCache;
         private readonly IErrorHandlerService errorHandlerService;
-        private readonly IDataReaderService dataReaderService;
+        private int attempts;
 
         public bool IsInitialised { get; private set; }
 
-        public ChallengeSolver(IWordDictionaryCache wordCache, IErrorHandlerService errorHandlerService, IDataReaderService dataReaderService)
+        public ChallengeSolver(IWordDictionaryCache wordCache, IErrorHandlerService errorHandlerService)
         {
             this.wordCache = wordCache;
             this.errorHandlerService = errorHandlerService;
-            this.dataReaderService = dataReaderService;
         }
 
-        public bool Initialise(string dictPath, string outFilePath)
+        public WordPair Solve(string startWord, string targetWord)
         {
-            if (!this.dataReaderService.CheckReaderSourceExists(dictPath))
-            {
-                this.errorHandlerService.HandleError("Error: Dictionary file not found");
-                return false;
-            }
+            this.attempts = 0;
 
-            string inputBlob;
-            try
-            {
-                inputBlob = this.dataReaderService.ReadAll(dictPath);
-            }
-            catch (Exception ex)
-            {
-                this.errorHandlerService.HandleException(ex, "Error: Unable to read Dictionary data");
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(inputBlob))
-            {
-                this.errorHandlerService.HandleError("Error: Unable to read Dictionary data");
-                return false;
-            }
-
-            if (!this.wordCache.LoadFilteredDictionary(inputBlob))
-            {
-                this.errorHandlerService.HandleError("Error: Unable to load Dictionary data");
-                return false;
-            }
-
-            return this.wordCache.IsDataLoadComplete;
-        }
-
-        public IReadOnlyList<string> Solve(string startWord, string targetWord)
-        {
             if (!this.wordCache.IsDataLoadComplete)
             {
                 this.errorHandlerService.HandleError("Error: Dictionary not loaded");
                 return null;
             }
 
-            var initialWordPair = new WordPair(startWord, targetWord);
+            WordPair initialWordPair = null;
+            try
+            {
+                initialWordPair = new WordPair(startWord, targetWord);
+            }
+            catch (Exception ex)
+            {
+                // NB Because the params are already validated, this scenario should never happen
+                this.errorHandlerService.HandleException(ex, $"Word lengths don't match: {startWord}, {targetWord}");
+                return null;
+            }
 
             var finalWordPair = this.PopulateWordPairs(initialWordPair);
 
             if (finalWordPair == null)
             {
-                this.errorHandlerService.HandleError("No solution exists for the given words");
+                // Is this an error, or a valid result?
+                this.errorHandlerService.HandleError("Unable to derive a solution for the given words");
                 return null;
             }
 
-            return finalWordPair.ReturnWordChangeHistory().ToList();
+            return finalWordPair;
         }
 
         private WordPair PopulateWordPairs(WordPair input)
         {
+            if (this.attempts++ > Globals.Constants.MaximumPathsToTry)
+            {
+                return null;
+            }
+
+            if (input.Depth > Globals.Constants.MaximumPathDepth)
+            {
+                return null;
+            }
+
             if (input.AreAdjacentOrSame)
             {
                 return input;
@@ -93,27 +80,34 @@
             {
                 foreach (var tw in nextTargetWordOptions)
                 {
-                    var tryPair = new WordPair(sw, tw);
+                    WordPair tryPair = null;
+                    try
+                    {
+                        tryPair = new WordPair(sw, tw);
+                    }
+                    catch (Exception ex)
+                    {
+                        // NB Because the dictionary words are filtered on loading, this scenario should never happen
+                        this.errorHandlerService.HandleException(ex, $"Word lengths don't match: {sw}, {tw}", notifyUser:false);
+                        continue;
+                    }
+
                     if (tryPair.AreAdjacentOrSame)
                     {
                         tryPair.SetParent(input);
                         return tryPair;
                     }
 
-                    if (tryPair.UnmatchedCharacterCount <= input.UnmatchedCharacterCount)
-                    {
-                        tryPairs.Add(tryPair);
-                    }
+                    tryPairs.Add(tryPair);
                 }
             }
 
             foreach (var tryPair in tryPairs.OrderBy(x => x.UnmatchedCharacterCount))
             {
+                tryPair.SetParent(input);
                 var tryInnerPair = this.PopulateWordPairs(tryPair);
                 if (tryInnerPair != null) 
                 {
-                    tryInnerPair.SetParent(input);
-
                     return tryInnerPair;
                 }
             }

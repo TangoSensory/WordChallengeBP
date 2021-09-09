@@ -7,6 +7,6 @@
     public interface IDataReaderService
     {
         bool CheckReaderSourceExists(string path);
-        string ReadAll(string path);
+        string[] ReadAll(string path);
     }
 }

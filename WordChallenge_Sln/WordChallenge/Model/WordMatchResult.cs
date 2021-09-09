@@ -1,18 +1,21 @@
 ﻿namespace WordChallenge.Model
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public class WordMatchResult
     {
-        public WordMatchResult(List<int> matchedCharacterLocations, int wordLength)
+        public WordMatchResult(string word1, string word2, List<int> matchedCharacterLocations, int wordLength)
         {
+            this.Word1 = word1;
+            this.Word2 = word2;
             this.wordLength = wordLength;
             this.MatchedCharacterLocations = matchedCharacterLocations ?? new List<int>();
         }
 
-        private int wordLength;
+        private readonly int wordLength;
+
+        public string Word1 { get; private set; }
+        public string Word2 { get; private set; }
         public int MatchCount => this.MatchedCharacterLocations?.Count ?? -1;
         public int UnmatchedCharacterCount
         {

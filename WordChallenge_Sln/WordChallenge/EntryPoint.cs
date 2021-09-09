@@ -1,6 +1,7 @@
 ﻿namespace WordChallenge
 {
     using System;
+    using WordChallenge.Cache.Interfaces;
     using WordChallenge.Services.Interfaces;
     using WordChallenge.Validators.Interfaces;
 
@@ -9,19 +10,29 @@
         private readonly IParamsValidator paramsValidator;
         private readonly IChallengeSolver challengeSolver;
         private readonly IErrorHandlerService errorHandlerService;
+        private readonly IDataWriterService dataWriterService;
+        private readonly IWordDictionaryCache wordCache;
 
-        public EntryPoint(IParamsValidator paramsValidator, IChallengeSolver challengeSolver, IErrorHandlerService errorHandlerService)
+        public EntryPoint(
+            IParamsValidator paramsValidator, 
+            IChallengeSolver challengeSolver, 
+            IErrorHandlerService errorHandlerService, 
+            IDataReaderService dataReaderService,
+            IDataWriterService dataWriterService,
+            IWordDictionaryCache wordCache)
         {
             this.paramsValidator = paramsValidator;
             this.challengeSolver = challengeSolver;
             this.errorHandlerService = errorHandlerService;
+            this.dataWriterService = dataWriterService;
+            this.wordCache = wordCache;
         }
 
         public void Execute(string[] args)
         {
             if (args.Length != Globals.Constants.AppParameterCount)
             {
-                //this.errorHandlerService
+                this.errorHandlerService.HandleError("Invalid parameters. Please try again supplying the following command line parameers: \"startWord\" \"targetWord\" \"dictionaryFilePath\" \"outputFilePath\"");
                 return;
             }
 
@@ -37,7 +48,7 @@
             }
             catch (Exception ex)
             {
-                //this.errorHandlerService
+                this.errorHandlerService.HandleException(ex);
                 return;
             }
 
@@ -47,11 +58,39 @@
             }
             catch (Exception ex)
             {
-                //this.errorHandlerService
+                this.errorHandlerService.HandleException(ex);
                 return;
             }
 
+            if (!this.dataWriterService.CreateOutptTarget(outputFilePath))
+            {
+                this.errorHandlerService.HandleError("Unable to create the output file");
+                return;
+            }
 
+            if (!this.wordCache.ETL(dictFilePath))
+            {
+                return;
+            }
+
+            var result = this.challengeSolver.Solve(startWord, targetWord);
+
+            if (result != null)
+            {
+                try
+                {
+                    this.dataWriterService.Write(result.ToString());
+
+                    // NB In a production system, there'd be another Interface here to abstract the actual output device and
+                    // enable full testing of this method
+                    Console.WriteLine($"Solution written to {outputFilePath}.");
+                }
+                catch (Exception ex)
+                {
+                    this.errorHandlerService.HandleException(ex, "Error writing to output file");
+                }
+            }
         }
+
     }
 }

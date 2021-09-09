@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Cache\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WordChallenge\WordChallenge.csproj" />
   </ItemGroup>
 

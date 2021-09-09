@@ -17,11 +17,11 @@
 
             if (UnmatchedCharacterCount < 0)
             {
-                // Log here if required
                 throw new Exception("Invalid Word Format - word lengths do not match");
             }
         }
 
+        public int Depth => this.GetDepth(0);
         public bool IsTopLevel => this.PreviousStartWords?.Any() != true;
         public int UnmatchedCharacterCount => this.wordMatchResult?.UnmatchedCharacterCount ?? -1;
         public bool AreAdjacentOrSame => UnmatchedCharacterCount >= 0 && this.UnmatchedCharacterCount <= 1;
@@ -38,8 +38,13 @@
 
         public void SetPreviousWords(WordPair parent)
         {
-            this.PreviousStartWords = parent.PreviousStartWords.Append(parent.StartWord).ToList();
-            this.PreviousTargetWords = parent.PreviousTargetWords.Append(parent.TargetWord).ToList();
+            this.PreviousStartWords = parent.PreviousStartWords.Append(parent.StartWord).Distinct().ToList();
+            this.PreviousTargetWords = parent.PreviousTargetWords.Append(parent.TargetWord).Distinct().ToList();
+        }
+
+        public int GetDepth(int currentDepth)
+        {
+            return this.IsTopLevel ? currentDepth : this.ParentWordPair.GetDepth(currentDepth + 1);
         }
 
         public void SetParent(WordPair parent)

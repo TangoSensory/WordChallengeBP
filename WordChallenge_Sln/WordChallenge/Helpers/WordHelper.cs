@@ -1,8 +1,6 @@
 ﻿namespace WordChallenge.Helpers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
     using WordChallenge.Model;
 
     public static class WordHelper
@@ -26,7 +24,7 @@
                 }
             }
 
-            return new WordMatchResult(outList, Globals.Constants.WordLength);
+            return new WordMatchResult(word1, word2, outList, Globals.Constants.WordLength);
         }
     }
 }
