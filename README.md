@@ -29,6 +29,7 @@ SAME > CAME > CASE > CAST > COST
 -	In this case the IO is file-based, but the Interfaces are designed to be device-independent
 -	A simple in-memory (non-persisted), class-based design is used as the word-cache. For larger data-sources, other solutions should be considered
 -	For performance reasons, the dictionary is filtered based on the word-length
+-	For the WordDictionaryCache, I added the capability to store (and access) copies of the word cache sorted on different character locations. In the end I didn't use the functionality
 
 # ChallengeSolver Algorithm
 -	Works from both ends of word-path simultaneously, in an attempt to narrow down the number of potential paths in each search
