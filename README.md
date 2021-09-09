@@ -6,11 +6,14 @@
 A program to solve a word puzzle, in which the user chooses:
 -	A start word i.e. same
 -	An end word i.e. cost
+
 ...and the program finds a list of words that move from the start word to the end word, using the following rules:
 -	Only one letter can change between any two words
 -	Each intermediate step is a word from the dictionary file (supplied)
+
 For example:
--	SAME > CAME > CASE > CAST > COST
+
+SAME > CAME > CASE > CAST > COST
 
 # Launch / Usage Notes
 -	Build the Solution in VisualStudio
@@ -40,6 +43,7 @@ For example:
 -	Letter changes do not include character additions/subtractions
 - 	The start and end words don’t need to exist in the supplied dictionary
 -	Output files should not overwrite existing files
+-	Output format will be CSV
 - 	Filtered/Processed data is not persisted between invocations
 -	The contents of the Dictionary are assumed to be valid, so are not checked on loading
 -	Some sensible (or perhaps over-generous) limitations have been placed on the total number of word-path searches to attempt, and the maximum word-depth down any single path
