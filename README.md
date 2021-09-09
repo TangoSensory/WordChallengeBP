@@ -42,6 +42,7 @@ For example:
 -	Output files should not overwrite existing files
 - 	Filtered/Processed data is not persisted between invocations
 -	The contents of the Dictionary are assumed to be valid, so are not checked on loading
+-	Some sensible (or perhaps over-generous) limitations have been placed on the total number of word-path searches to attempt, and the maximum word-depth down any single path
 
 # Out of Scope (Time/context related limitations)
 - 	Usually, a production Solution would be split into multiple projects for Model, Services, Presentation etc. but the required functionality and integrations for this task are very limited, so I don’t feel it would add much benefit
