@@ -54,7 +54,7 @@ SAME > CAME > CASE > CAST > COST
 -	Logging
 -	Xml comments 
 -	Checking input or output file permissions
--	Test coverage is very limited. Tests are there to demonstrate knowledge of testing tools and techniques, not cover the entire solution in this case
+-	TEST COVERAGE IS DELIBERATELY LIMITED. Tests are there to demonstrate knowledge of testing tools and techniques, not cover the entire solution in this case. See ChallengeSolverTests and WordDictionaryCacheTests for properly coded examples
 -	TDD for the reason above
 -	All actions are synchronous. In a console app with no additional functionality, this makes perfect sense, in most real-word scenarios IO will usually be async
 -	Error messages are magic strings. In a production scenario, these may be centralised or localised for multi-language support. This eases message management and helps make unit testing more robust
