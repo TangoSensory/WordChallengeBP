@@ -18,7 +18,7 @@ SAME > CAME > CASE > CAST > COST
 # Launch / Usage Notes
 -	Build the Solution in VisualStudio
 -	Open Windows Command: Cmd.exe
-- 	Navigate to the folder containing WordChallenge.exe
+- Navigate to the folder containing WordChallenge.exe
 -	Type the command using the format: WordChallenge "startWord" "targetWord" "dictionaryFilePath" "outputFilePath"
 -	The solution to the puzzle, written to the supplied "outputFilePath", will be a text file containing a comma-separated list of words
 -	Errors will be notified to the console window, in which case the "outputFilePath" file will be empty
@@ -37,21 +37,22 @@ SAME > CAME > CASE > CAST > COST
 -	Searches are prioritised starting with word-pairs with the most matching characters
 -	Searches are prioritised for Words that have not been used previously
 -	Searches are prioritised for changes that involve characters that aren't matched already
+-	Uses a recursive method (PopulateWordPairs) to populate a path/ladder between each supplied word-pair. As noted above, this path/ladder is not necessarily the shortest
 
 # Assumptions
-- 	The solution will run under Windows (the target architecture was not specified)
+- The solution will run under Windows (the target architecture was not specified)
 -	The user is familiar with Visual Studio and Windows CLI
 -	Letter changes do not include character additions/subtractions
-- 	The start and end words don’t need to exist in the supplied dictionary
+- The start and end words don’t need to exist in the supplied dictionary
 -	Output files should not overwrite existing files
 -	Output format will be CSV
-- 	Filtered/Processed data is not persisted between invocations
+- Filtered/Processed data is not persisted between invocations
 -	The contents of the Dictionary are assumed to be valid, so are not checked on loading
 -	Some sensible (or perhaps over-generous) limitations have been placed on the total number of word-path searches to attempt, and the maximum word-depth down any single path
 -	All word/character comparisons are case-insensitive
 
 # Out of Scope (Time/context related limitations)
-- 	Usually, a production Solution would be split into multiple projects for Model, Services, Presentation etc. but the required functionality and integrations for this task are very limited, so I don’t feel it would add much benefit
+- Usually, a production Solution would be split into multiple projects for Model, Services, Presentation etc. but the required functionality and integrations for this task are very limited, so I don’t feel it would add much benefit
 -	Logging
 -	Xml comments 
 -	Checking input or output file permissions
@@ -66,5 +67,5 @@ SAME > CAME > CASE > CAST > COST
 # Potential Enhancements
 -	Formal Caching (eg. Redis)
 -	Feedback via the console 
--	The solver algorithm could be tweaked to ensure that the solution delivers the SHORTEST (or even the LONGEST) path between the start and end words
+-	The solver algorithm could be tweaked to ensure that the solution delivers the SHORTEST path/ladder between the start and end words. This would come at the expense of additional processing time/resources since many different paths would need to be attempted and compared
 
