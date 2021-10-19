@@ -1,3 +1,5 @@
+** NOT A PRODUCTION SYSTEM - Coded in a time-limited manner as part of a job application **
+
 # WordChallengeBP
 
 ## Gary Taylor
